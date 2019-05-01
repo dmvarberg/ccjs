@@ -1,0 +1,604 @@
+<html>
+<head>
+<title>Tile World Level Maker</title>
+</head>
+<!--
+A floor B wall C chip D water E fire F invisible G thinN H thinW I thinS J thinE K unused L dirt M ice N ffS O bluekey 
+P redkey Q greenkey R yellowkey S ffN T ffE U ffW V exit W bluedoor X reddoor Y greendoor Z yellowdoor a iceNW b iceNE 
+c iceSE d iceSW e fakeblue f realblue g 20 h thief i socket j greenbutton k redbutton l toggleclosed m toggleopen 
+n brownbutton o bluebutton p transporter q bomb r trap s appearing t gravel u popup v hint w thinsSE x generator 
+y ffrandom z splash 0 firechip 1 toastchip 2 36 3 37 4 flippers 5 fireboots 6 skates 7 gravityboots 
+_ layerseparator
+A bugN B bugW C bugS D bugE E fireballN F fireballW G fireballS H fireballE I ballN J ballW K ballS L ballE
+M tankN N tankW O tankS P tankE Q gliderN R gliderW S gliderS T gliderE U teethN V teethW W teethS X teethE
+Y walkerN Z walkerW a walkerS b walkerE c blobN d blobW e blobS f blobE g paramN h paramW i paramS j paramE 
+s playerN t playerW u playerS v playerE 1 cloneblockN 2 cloneblockW 3 cloneblockS 4 cloneblockE 5 iceblock 8 block 
+0 empty
+~ dataseparator 
+= endofline
+===========
+var list_of_stocks={
+   "CBB" : "Communications",
+   "VZ" : "Verizon"};
+   for (var key in list_of_stocks){
+       if (list_of_stocks.hasOwnProperty(key))
+       console.log(key + " -> " + list_of_stocks[key]);
+       }
+   }
+-->
+<style> 
+.fullset {background: url("tilez.png") 320 512; height: 32px; width: 32px;}   
+.two {background: url("tilez.png") 32 320; height: 32px; width: 32px;}
+.three {background: url("tilez.png") 64 64; height: 32px; width: 32px;}
+.four  {background: url("tilez.png") 96 96; height: 32px; width: 32px;}
+.wall  {background: url("tilez.png") 320 480; height: 32px; width: 32px;}  
+.floor  {background: url("tilez.png") 320 512; height: 32px; width: 32px;}  
+.redkey  {background: url("tilez.png") 128 352; height: 32px; width: 32px;} 
+.bluekey  {background: url("tilez.png") 128 384; height: 32px; width: 32px;}  
+.greenkey  {background: url("tilez.png") 128 320; height: 32px; width: 32px;} 
+.yellowkey  {background: url("tilez.png") 128 288; height: 32px; width: 32px;}
+.reddoor  {background: url("tilez.png") 288 288; height: 32px; width: 32px;}   
+.bluedoor  {background: url("tilez.png") 288 320; height: 32px; width: 32px;}  
+.greendoor  {background: url("tilez.png") 288 256; height: 32px; width: 32px;} 
+.yellowdoor  {background: url("tilez.png") 288 224; height: 32px; width: 32px;} 
+.socket  {background: url("tilez.png") 256 448; height: 32px; width: 32px;}    
+.exit  {background: url("tilez.png") 288 352; height: 32px; width: 32px;}    
+.hint  {background: url("tilez.png") 256 32; height: 32px; width: 32px;}     
+.chip  {background: url("tilez.png") 320 448; height: 32px; width: 32px;}   
+.block  {background: url("tilez.png") 320 480; height: 32px; width: 32px;}  
+.water  {background: url("tilez.png") 320 480; height: 32px; width: 32px;}   
+.gravel  {background: url("tilez.png") 320 480; height: 32px; width: 32px;}  
+.playersouth  {background: url("tilez.png") 128 96; height: 32px; width: 32px;}  
+.tileselector  {background: url("tilez.png") 320 512; height: 512px; width: 224px;}   
+
+table, th, td {border: 0px;}
+</style>
+<script>
+  function load(){
+      var lesson1="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />";
+      /*
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAABBBBBABBBBBAAAAAAAAAAA<br /> 
+AAAAAAAAAABAAABBBAAABAAAAAAAAAAA<br /> 
+AAAAAAAAAABACABVBACABAAAAAAAAAAA<br /> 
+AAAAAAAABBBBBYBiBYBBBBBAAAAAAAAA<br /> 
+AAAAAAAABARAWAAAAAXARABAAAAAAAAA<br /> 
+AAAAAAAABACABOAvAPBACABAAAAAAAAA<br /> 
+AAAAAAAABBBBBCAAACBBBBBAAAAAAAAA<br /> 
+AAAAAAAABACABOAAAPBACABAAAAAAAAA<br /> 
+AAAAAAAABAAAXAACAAWAAABAAAAAAAAA<br /> 
+AAAAAAAABBBBBBZBZBBBBBBAAAAAAAAA<br /> 
+AAAAAAAAAAAABAABAABAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAABACBCABAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAABAABQABAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAABBBBBBBAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br /> 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />  
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<br />
+_<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+00000000000000000000000000000000<br />
+000000000000000u0000000000000000<br /> 
+=<br />
+<br />
+</div>
+*/
+document.getElementById('LevelMapString').innerHTML=lesson1;
+  }
+
+  function report(){
+    //  alert("hi");
+      alert(document.getElementById('LevelMapString').innerText);
+  }  
+</script>
+
+<body bgcolor="lightgreen">
+hi how do you like me so far? <hr />
+<button onclick="load()"> click first </button>
+<button onclick="report()"> click second</button>
+
+<div id="TileSelector"  position: absolute;left: 0px;top: 20px">
+        <div class="fullset" id="tilez"><div class="tileselector" /></div></div>
+</div>
+<div id="LevelMapString" style="color:blue;font-family: 'Courier New', Courier, monospace; 
+    position: absolute;left: 300px;top: 40px">
+LevelMapString:
+</div>
+<div id="LevelMapString" style="color:blue;font-family: 'Courier New', Courier, monospace; 
+    position: absolute;left: 440px;top: 40px"></div>
+<div style="position: absolute;left: 800px;top: 40px">
+<table cellspacing="0" cellpadding="0">
+<script>
+    for(j=0;j<8;j++){
+        document.write("<tr>")
+        for(i=0;i<32;i++)
+        {document.write("<td>");
+        document.write('<div class="fullset" id="tile10"><div class="floor" /></div>');
+        document.write("</td>")}
+        document.write("</tr>")
+    }
+</script>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="exit" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="greendoor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="socket" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="greendoor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="yellowkey" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="bluedoor" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="reddoor" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="yellowkey" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="bluekey" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="hint" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="redkey" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="playersouth" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>    
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="bluekey" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="redkey" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="reddoor" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="bluedoor" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="yellowdoor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="yellowdoor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>    
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="chip" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="greenkey" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>
+<tr><td><div class="fullset" id="tileG0"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG1"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG2"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG3"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG4"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG5"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG6"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG7"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG8"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileG9"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGa"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGb"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGc"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGd"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGe"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGf"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGg"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGh"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGi"><div class="wall" /></div></td>
+<td><div class="fullset" id="tileGj"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGk"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGl"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGm"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGn"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGo"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGp"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGq"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGr"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGs"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGt"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGu"><div class="floor" /></div></td>
+<td><div class="fullset" id="tileGv"><div class="floor" /></div></td></tr>    
+<script>
+        for(j=0;j<10;j++){
+            document.write("<tr>")
+            for(i=0;i<32;i++)
+            {document.write("<td>");
+            document.write('<div class="fullset" id="tile10"><div class="floor" /></div');
+            document.write("</td>")}
+            document.write("</tr>")
+        }
+</script>
+<div>
+</table>
+</body>
+</html>
